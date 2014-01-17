@@ -7,7 +7,7 @@
 				<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/7330597b92db84b1a33c7596bb7b1813502879be" uiVersion="1" version="1" name="Bon de commande-livraison Real">
 					<mois_de_visite />
 					<cmm_ou_stock_max />
-					<produit_group>
+					<produit_group index="">
 						<produit_liste>
 							<produit_appartenant_au_PPS_apres_derniere_livraison_label />
 							<produit_apres_la_derniere_livraison_label />
@@ -23,7 +23,7 @@
 							<produit_date_de_peremption_du_lot />
 						</produit_liste_2>
 					</produit_group>
-					<fiche_rempli>
+					<fiche_rempli index="">
 						<produit_liste_3>
 							<diu_quantite_necessaire_label_2 />
 							<produit_appartenant_au_PPS_apres_derniere_livraison_label_2 />
@@ -65,8 +65,18 @@
 					<compt_de_visite />
 					<compt_de_visite_precedent />
 					<total_a_recouvrir />
+
+                    <product_ix_1 />
+                    <product_ix_2 />
 				</data>
 			</instance>
+            <instance id="products" src="jr://fixture/commtrack:products" />
+
+            <bind nodeset="/data/product_ix_1" calculate="count(/data/produit_group)"/>
+			<bind nodeset="/data/product_ix_2" calculate="count(/data/fiche_rempli)"/>
+            <setvalue event="jr-insert" ref="/data/produit_group/@index" value="int(/data/product_ix_1)"/>
+			<setvalue event="jr-insert" ref="/data/fiche_rempli/@index" value="int(/data/product_ix_2)"/>
+
 			<bind nodeset="/data/mois_de_visite" />
 			<bind nodeset="/data/cmm_ou_stock_max" />
 			<bind nodeset="/data/produit_group" />
@@ -173,7 +183,7 @@
 						<value>CMM</value>
 					</text>
 					<text id="produit_liste-label">
-						<value>Produit</value>
+						<value>Produit</value> <!-- TODO add product name (and to #2, #3) -->
 					</text>
 					<text id="produit_appartenant_au_PPS_apres_derniere_livraison_label-label">
 						<value>Stock appartenant au PPS aprés la dernière livraison: &#10;&#10; <output value="/data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison"/></value>
@@ -318,7 +328,7 @@
 				<value>decembre</value>
 			</item>
 		</select1>
-		<select1 ref="/data/cmm_ou_stock_max">
+		<select1 ref="/data/cmm_ou_stock_max"> <!-- TODO eliminate this question -->
 			<label ref="jr:itext('cmm_ou_stock_max-label')" />
 			<item>
 				<label ref="jr:itext('cmm_ou_stock_max-stock_maximum-label')" />
@@ -329,7 +339,7 @@
 				<value>cmm</value>
 			</item>
 		</select1>
-		<group ref="/data/produit_group">
+        <repeat nodeset="/data/produit_group" jr:count="count(instance('products')/products/product)">
 			<group ref="/data/produit_group/produit_liste" appearance="field-list">
 				<label ref="jr:itext('produit_liste-label')" />
 				<trigger ref="/data/produit_group/produit_liste/produit_appartenant_au_PPS_apres_derniere_livraison_label">
@@ -374,8 +384,8 @@
 					<label ref="jr:itext('produit_date_de_peremption_du_lot-label')" />
 				</input>
 			</group>
-		</group>
-		<group ref="/data/fiche_rempli">
+		</repeat>
+        <repeat nodeset="/data/fiche_rempli" jr:count="count(instance('products')/products/product)">
 			<group ref="/data/fiche_rempli/produit_liste_3" appearance="field-list">
 				<label ref="jr:itext('produit_liste_3-label')" />
 				<trigger ref="/data/fiche_rempli/produit_liste_3/diu_quantite_necessaire_label_2">
@@ -421,6 +431,6 @@
 					<label ref="jr:itext('produit_date_de_peremption_du_lot_label-label')" />
 				</trigger>
 			</group>
-		</group>
+		</repeat>
 	</h:body>
 </h:html>
