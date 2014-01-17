@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns:orx="http://openrosa.org/jr/xforms" xmlns="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://openrosa.org/javarosa">
+	<h:head>
+		<h:title>Bon de commande-livraison Real</h:title>
+		<model>
+			<instance>
+				<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/7330597b92db84b1a33c7596bb7b1813502879be" uiVersion="1" version="1" name="Bon de commande-livraison Real">
+					<mois_de_visite />
+					<cmm_ou_stock_max />
+					<produit_group>
+						<produit_liste>
+							<produit_appartenant_au_PPS_apres_derniere_livraison_label />
+							<produit_apres_la_derniere_livraison_label />
+							<produit_disponible_et_utilisable_a_la_livraison />
+							<produit_recu_hors_entrepot_mobile>0</produit_recu_hors_entrepot_mobile>
+							<produit_pertes_et_ajustements>0</produit_pertes_et_ajustements>
+						</produit_liste>
+						<produit_liste_2>
+							<produit_stock_ideal_label />
+							<produit_livraison_necessaire_question />
+							<produit_livraison_effective />
+							<produit_numero_de_lot />
+							<produit_date_de_peremption_du_lot />
+						</produit_liste_2>
+					</produit_group>
+					<fiche_rempli>
+						<produit_liste_3>
+							<diu_quantite_necessaire_label_2 />
+							<produit_appartenant_au_PPS_apres_derniere_livraison_label_2 />
+							<produit_apres_la_derniere_livraison_label_2 />
+							<produit_disponible_et_utilisable_a_la_livraison_label />
+							<produit_appartenant_au_pps_restant_label_2 />
+							<produit_consommation_facturable_de_la_periode_label_2 />
+							<produit_prix_unitaire_label_2 />
+							<produit_recourvrements_du_district_label_2 />
+							<produit_recu_hors_entrepot_mobile_label />
+							<produit_pertes_et_ajustements_label />
+							<produit_consommation_reelle_du_pps_label_2 />
+							<produit_livraison_label />
+							<produit_numero_de_lot_label />
+							<produit_date_de_peremption_du_lot_label />
+						</produit_liste_3>
+					</fiche_rempli>
+					<produit-stock_appartenant_au_PPS_apres_la_derniere_livraison />
+					<produit-stock_appartenant_au_PPS_au_debout />
+					<produit-stock_appartenant_au_PPS_apres_la_derniere_livraison_1 />
+					<produit-stock_apres_la_derniere_livraison />
+					<produit-stock_au_debout />
+					<produit-stock_apres_la_derniere_livraison_1 />
+					<produit_appartenant_au_pps_restant />
+					<produit_appartenant_au_pps_restant_1 />
+					<produit_consommation_facturable_de_la_periode />
+					<produit_consommation_brute_apres_la_derniere_livraison />
+					<produit_consommation_brute_actuelle />
+					<produit_prix_unitaire />
+					<produit_stock_ideal />
+					<produit_cmm />
+					<produit_stock_maximum_au_debout />
+					<produit_recouvrement_du_district />
+					<produit_livraison />
+					<produit_livraison_necessaire />
+					<produit_consommation_reelle_du_PPS />
+					<produit_stock_apres_la_livraison />
+					<produit_appartenant_au_PPS_nouveau />
+					<compt_de_visite />
+					<compt_de_visite_precedent />
+					<total_a_recouvrir />
+				</data>
+			</instance>
+			<bind nodeset="/data/mois_de_visite" />
+			<bind nodeset="/data/cmm_ou_stock_max" />
+			<bind nodeset="/data/produit_group" />
+			<bind nodeset="/data/produit_group/produit_liste" />
+			<bind nodeset="/data/produit_group/produit_liste/produit_appartenant_au_PPS_apres_derniere_livraison_label" />
+			<bind nodeset="/data/produit_group/produit_liste/produit_apres_la_derniere_livraison_label" />
+			<bind nodeset="/data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison" type="xsd:int" required="true()" />
+			<bind nodeset="/data/produit_group/produit_liste/produit_recu_hors_entrepot_mobile" type="xsd:int" constraint="if(/data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison &gt; /data/produit-stock_apres_la_derniere_livraison, . &gt;= /data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison - /data/produit-stock_apres_la_derniere_livraison, 1 = 1)" jr:constraintMsg="jr:itext('produit_recu_hors_entrepot_mobile-constraintMsg')" required="false()" />
+			<bind nodeset="/data/produit_group/produit_liste/produit_pertes_et_ajustements" type="xsd:int" required="false()" />
+			<bind nodeset="/data/produit_group/produit_liste_2" />
+			<bind nodeset="/data/produit_group/produit_liste_2/produit_stock_ideal_label" />
+			<bind nodeset="/data/produit_group/produit_liste_2/produit_livraison_necessaire_question" />
+			<bind nodeset="/data/produit_group/produit_liste_2/produit_livraison_effective" type="xsd:double" relevant="/data/produit_group/produit_liste_2/produit_livraison_necessaire_question = 'non'" />
+			<bind nodeset="/data/produit_group/produit_liste_2/produit_numero_de_lot" type="xsd:string" />
+			<bind nodeset="/data/produit_group/produit_liste_2/produit_date_de_peremption_du_lot" type="xsd:date" />
+			<bind nodeset="/data/fiche_rempli" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/diu_quantite_necessaire_label_2" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_appartenant_au_PPS_apres_derniere_livraison_label_2" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_apres_la_derniere_livraison_label_2" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_disponible_et_utilisable_a_la_livraison_label" relevant="0=1" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_appartenant_au_pps_restant_label_2" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_consommation_facturable_de_la_periode_label_2" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_prix_unitaire_label_2" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_recourvrements_du_district_label_2" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_recu_hors_entrepot_mobile_label" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_pertes_et_ajustements_label" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_consommation_reelle_du_pps_label_2" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_livraison_label" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_numero_de_lot_label" />
+			<bind nodeset="/data/fiche_rempli/produit_liste_3/produit_date_de_peremption_du_lot_label" />
+			<bind nodeset="/data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison" calculate="coalesce(/data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison_1, /data/produit-stock_appartenant_au_PPS_au_debout)" />
+			<bind nodeset="/data/produit-stock_appartenant_au_PPS_au_debout" />
+			<bind nodeset="/data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison_1" />
+			<bind nodeset="/data/produit-stock_apres_la_derniere_livraison" calculate="if(/data/produit-stock_apres_la_derniere_livraison_1 != '', /data/produit-stock_apres_la_derniere_livraison_1, coalesce(/data/produit-stock_au_debout, /data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison))" />
+			<bind nodeset="/data/produit-stock_au_debout" />
+			<bind nodeset="/data/produit-stock_apres_la_derniere_livraison_1" />
+			<bind nodeset="/data/produit_appartenant_au_pps_restant" calculate="if(/data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison - /data/produit-stock_apres_la_derniere_livraison + /data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison &gt;= '0', /data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison - /data/produit-stock_apres_la_derniere_livraison + /data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison, '0')" />
+			<bind nodeset="/data/produit_appartenant_au_pps_restant_1" calculate="/data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison - /data/produit-stock_apres_la_derniere_livraison + /data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison" />
+			<bind nodeset="/data/produit_consommation_facturable_de_la_periode" calculate="if(/data/produit_appartenant_au_pps_restant_1 &gt;= '0', '0', if(/data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison &gt;= 0, /data/produit_appartenant_au_pps_restant_1 * -1, /data/produit-stock_apres_la_derniere_livraison - /data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison))" />
+			<bind nodeset="/data/produit_consommation_brute_apres_la_derniere_livraison" />
+			<bind nodeset="/data/produit_consommation_brute_actuelle" calculate="coalesce(/data/produit_consommation_brute_apres_la_derniere_livraison, '0') + /data/produit_consommation_reelle_du_PPS" />
+			<bind nodeset="/data/produit_prix_unitaire" />
+			<bind nodeset="/data/produit_stock_ideal" calculate="if(/data/cmm_ou_stock_max = 'cmm', coalesce(if(int(3.5 * /data/produit_cmm) = 3.5 * /data/produit_cmm, int(3.5 * /data/produit_cmm), int(3.5 * /data/produit_cmm + 1)), '0'), /data/produit_stock_maximum_au_debout)" />
+			<bind nodeset="/data/produit_cmm" calculate="/data/produit_consommation_brute_actuelle div /data/compt_de_visite" />
+			<bind nodeset="/data/produit_stock_maximum_au_debout" />
+			<bind nodeset="/data/produit_recouvrement_du_district" calculate="coalesce(/data/produit_consommation_facturable_de_la_periode * /data/produit_prix_unitaire, '0')" />
+			<bind nodeset="/data/produit_livraison" calculate="coalesce(if(/data/produit_group/produit_liste_2/produit_livraison_necessaire_question = 'oui', /data/produit_livraison_necessaire, /data/produit_group/produit_liste_2/produit_livraison_effective), '0')" />
+			<bind nodeset="/data/produit_livraison_necessaire" calculate="if(/data/produit_stock_ideal - /data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison &gt;= 0, /data/produit_stock_ideal - /data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison, '0')" />
+			<bind nodeset="/data/produit_consommation_reelle_du_PPS" calculate="/data/produit-stock_apres_la_derniere_livraison - coalesce(/data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison, '0') + coalesce(/data/produit_group/produit_liste/produit_recu_hors_entrepot_mobile, '0') - coalesce(/data/produit_group/produit_liste/produit_pertes_et_ajustements, '0')" />
+			<bind nodeset="/data/produit_stock_apres_la_livraison" calculate="if(/data/produit_livraison + /data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison &gt;= '0', /data/produit_livraison + /data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison, '0')" />
+			<bind nodeset="/data/produit_appartenant_au_PPS_nouveau" calculate="/data/produit_appartenant_au_pps_restant + /data/produit_group/produit_liste/produit_recu_hors_entrepot_mobile" />
+			<bind nodeset="/data/compt_de_visite" calculate="coalesce(/data/compt_de_visite_precedent, '0') + 1" />
+			<bind nodeset="/data/compt_de_visite_precedent" />
+			<bind nodeset="/data/total_a_recouvrir" calculate="/data/produit_recouvrement_du_district" />
+			<itext>
+				<translation lang="fra" default="">
+					<text id="mois_de_visite-label">
+						<value>Cette visite est pour quel mois?</value>
+					</text>
+					<text id="mois_de_visite-janvier-label">
+						<value>Janvier</value>
+					</text>
+					<text id="mois_de_visite-fevrier-label">
+						<value>Février</value>
+					</text>
+					<text id="mois_de_visite-mars-label">
+						<value>Mars</value>
+					</text>
+					<text id="mois_de_visite-avril-label">
+						<value>Avril</value>
+					</text>
+					<text id="mois_de_visite-mai-label">
+						<value>Mai</value>
+					</text>
+					<text id="mois_de_visite-juin-label">
+						<value>Juin</value>
+					</text>
+					<text id="mois_de_visite-juillet-label">
+						<value>Juillet</value>
+					</text>
+					<text id="mois_de_visite-aout-label">
+						<value>Août</value>
+					</text>
+					<text id="mois_de_visite-septembre-label">
+						<value>Septembre</value>
+					</text>
+					<text id="mois_de_visite-octobre-label">
+						<value>Octobre</value>
+					</text>
+					<text id="mois_de_visite-novembre-label">
+						<value>Novembre</value>
+					</text>
+					<text id="mois_de_visite-decembre-label">
+						<value>Decembre</value>
+					</text>
+					<text id="cmm_ou_stock_max-label">
+						<value>Est-ce que vous utiliserez la CMM ou le stock maximum pour calculer la livraison à cette visite ?</value>
+					</text>
+					<text id="cmm_ou_stock_max-stock_maximum-label">
+						<value>Stock Maximum</value>
+					</text>
+					<text id="cmm_ou_stock_max-cmm-label">
+						<value>CMM</value>
+					</text>
+					<text id="produit_liste-label">
+						<value>Produit</value>
+					</text>
+					<text id="produit_appartenant_au_PPS_apres_derniere_livraison_label-label">
+						<value>Stock appartenant au PPS aprés la dernière livraison: &#10;&#10; <output value="/data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison"/></value>
+					</text>
+					<text id="produit_apres_la_derniere_livraison_label-label">
+						<value>Stock aprés la dernière livraison: &#10;&#10; <output value="/data/produit-stock_apres_la_derniere_livraison"/></value>
+					</text>
+					<text id="produit_disponible_et_utilisable_a_la_livraison-label">
+						<value>Stock disponible et utilisable à la livraison</value>
+					</text>
+					<text id="produit_recu_hors_entrepot_mobile-label">
+						<value>Produit recu hors entrepôt mobile</value>
+					</text>
+					<text id="produit_recu_hors_entrepot_mobile-constraintMsg">
+						<value>La quantité reçue hors d’entrepôt mobile doit excéder la différence entre le stock disponible et utilisable à la livraison et le stock après la dernière livraison.</value>
+					</text>
+					<text id="produit_pertes_et_ajustements-label">
+						<value>Pertes et ajustements</value>
+					</text>
+					<text id="produit_liste_2-label">
+						<value>Produit</value>
+					</text>
+					<text id="produit_stock_ideal_label-label">
+						<value>Stock ideal: &#10;&#10; <output value="/data/produit_stock_ideal"/></value>
+					</text>
+					<text id="produit_livraison_necessaire_question-label">
+						<value>Nous devrions livrer <output value="/data/produit_livraison_necessaire"/>.  Est-ce que nous avons mené ce quantité du produit?</value>
+					</text>
+					<text id="produit_livraison_necessaire_question-oui-label">
+						<value>Oui nous avons livré cette quantité</value>
+					</text>
+					<text id="produit_livraison_necessaire_question-non-label">
+						<value>Non, nous avons livré une autre quantité</value>
+					</text>
+					<text id="TCU_livraison_label-label">
+						<value>Livraison effective</value>
+					</text>
+					<text id="produit_numero_de_lot-label">
+						<value>Numero de lot</value>
+					</text>
+					<text id="produit_date_de_peremption_du_lot-label">
+						<value>Date de péremption du lot</value>
+					</text>
+					<text id="produit_liste_3-label">
+						<value>Produit</value>
+					</text>
+					<text id="diu_quantite_necessaire_label_2-label">
+						<value>Stock ideal: &#10;&#10; <output value="/data/produit_stock_ideal"/></value>
+					</text>
+					<text id="produit_appartenant_au_PPS_apres_derniere_livraison_label_2-label">
+						<value>Stock appartenant au PPS aprés la dernière livraison: &#10;&#10; <output value="/data/produit-stock_appartenant_au_PPS_apres_la_derniere_livraison"/></value>
+					</text>
+					<text id="produit_apres_la_derniere_livraison_label_2-label">
+						<value>Stock aprés la dernière livraison: &#10;&#10; <output value="/data/produit-stock_apres_la_derniere_livraison"/></value>
+					</text>
+					<text id="produit_disponible_et_utilisable_a_la_livraison_label-label">
+						<value>Stock disponible et utilisable à la livraison: &#10;&#10; <output value="/data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison"/></value>
+					</text>
+					<text id="produit_appartenant_au_pps_restant_label_2-label">
+						<value>Stock appartenant au PPS restant: &#10;&#10; <output value="/data/produit_appartenant_au_PPS_nouveau"/></value>
+					</text>
+					<text id="produit_consommation_facturable_de_la_periode_label_2-label">
+						<value>Consommation facturable de la période: &#10;&#10; <output value="/data/produit_consommation_facturable_de_la_periode"/></value>
+					</text>
+					<text id="produit_prix_unitaire_label_2-label">
+						<value>Prix unitaire de produit: &#10;&#10; <output value="/data/produit_prix_unitaire"/></value>
+					</text>
+					<text id="produit_recourvrements_du_district_label_2-label">
+						<value>Recourvrements du district: &#10;&#10; <output value="/data/produit_recouvrement_du_district"/></value>
+					</text>
+					<text id="produit_recu_hors_entrepot_mobile_label-label">
+						<value>Produit recu hors entrepôt mobile: &#10;&#10; <output value="/data/produit_group/produit_liste/produit_recu_hors_entrepot_mobile"/></value>
+					</text>
+					<text id="produit_pertes_et_ajustements_label-label">
+						<value>Pertes et ajustements: &#10;&#10; <output value="/data/produit_group/produit_liste/produit_pertes_et_ajustements"/></value>
+					</text>
+					<text id="produit_consommation_reelle_du_pps_label_2-label">
+						<value>Consommation réelle du PPS: &#10;&#10; <output value="/data/produit_consommation_reelle_du_PPS"/></value>
+					</text>
+					<text id="produit_livraison_label-label">
+						<value>Livraison: &#10;&#10; <output value="/data/produit_livraison"/></value>
+					</text>
+					<text id="produit_numero_de_lot_label-label">
+						<value>Numero de lot: &#10;&#10; <output value="/data/produit_group/produit_liste_2/produit_numero_de_lot"/></value>
+					</text>
+					<text id="produit_date_de_peremption_du_lot_label-label">
+						<value>Date de péremption du lot: &#10;&#10; <output value="/data/diu_group/diu_liste_2/diu_date_de_peremption_du_lot"/></value>
+					</text>
+				</translation>
+			</itext>
+		</model>
+	</h:head>
+	<h:body>
+		<select1 ref="/data/mois_de_visite">
+			<label ref="jr:itext('mois_de_visite-label')" />
+			<item>
+				<label ref="jr:itext('mois_de_visite-janvier-label')" />
+				<value>janvier</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-fevrier-label')" />
+				<value>fevrier</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-mars-label')" />
+				<value>mars</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-avril-label')" />
+				<value>avril</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-mai-label')" />
+				<value>mai</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-juin-label')" />
+				<value>juin</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-juillet-label')" />
+				<value>juillet</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-aout-label')" />
+				<value>aout</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-septembre-label')" />
+				<value>septembre</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-octobre-label')" />
+				<value>octobre</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-novembre-label')" />
+				<value>novembre</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mois_de_visite-decembre-label')" />
+				<value>decembre</value>
+			</item>
+		</select1>
+		<select1 ref="/data/cmm_ou_stock_max">
+			<label ref="jr:itext('cmm_ou_stock_max-label')" />
+			<item>
+				<label ref="jr:itext('cmm_ou_stock_max-stock_maximum-label')" />
+				<value>stock_maximum</value>
+			</item>
+			<item>
+				<label ref="jr:itext('cmm_ou_stock_max-cmm-label')" />
+				<value>cmm</value>
+			</item>
+		</select1>
+		<group ref="/data/produit_group">
+			<group ref="/data/produit_group/produit_liste" appearance="field-list">
+				<label ref="jr:itext('produit_liste-label')" />
+				<trigger ref="/data/produit_group/produit_liste/produit_appartenant_au_PPS_apres_derniere_livraison_label">
+					<label ref="jr:itext('produit_appartenant_au_PPS_apres_derniere_livraison_label-label')" />
+				</trigger>
+				<trigger ref="/data/produit_group/produit_liste/produit_apres_la_derniere_livraison_label">
+					<label ref="jr:itext('produit_apres_la_derniere_livraison_label-label')" />
+				</trigger>
+				<input ref="/data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison">
+					<label ref="jr:itext('produit_disponible_et_utilisable_a_la_livraison-label')" />
+				</input>
+				<input ref="/data/produit_group/produit_liste/produit_recu_hors_entrepot_mobile">
+					<label ref="jr:itext('produit_recu_hors_entrepot_mobile-label')" />
+				</input>
+				<input ref="/data/produit_group/produit_liste/produit_pertes_et_ajustements">
+					<label ref="jr:itext('produit_pertes_et_ajustements-label')" />
+				</input>
+			</group>
+			<group ref="/data/produit_group/produit_liste_2" appearance="field-list">
+				<label ref="jr:itext('produit_liste_2-label')" />
+				<trigger ref="/data/produit_group/produit_liste_2/produit_stock_ideal_label">
+					<label ref="jr:itext('produit_stock_ideal_label-label')" />
+				</trigger>
+				<select1 ref="/data/produit_group/produit_liste_2/produit_livraison_necessaire_question">
+					<label ref="jr:itext('produit_livraison_necessaire_question-label')" />
+					<item>
+						<label ref="jr:itext('produit_livraison_necessaire_question-oui-label')" />
+						<value>oui</value>
+					</item>
+					<item>
+						<label ref="jr:itext('produit_livraison_necessaire_question-non-label')" />
+						<value>non</value>
+					</item>
+				</select1>
+				<input ref="/data/produit_group/produit_liste_2/produit_livraison_effective">
+					<label ref="jr:itext('TCU_livraison_label-label')" />
+				</input>
+				<input ref="/data/produit_group/produit_liste_2/produit_numero_de_lot" appearance="numeric">
+					<label ref="jr:itext('produit_numero_de_lot-label')" />
+				</input>
+				<input ref="/data/produit_group/produit_liste_2/produit_date_de_peremption_du_lot">
+					<label ref="jr:itext('produit_date_de_peremption_du_lot-label')" />
+				</input>
+			</group>
+		</group>
+		<group ref="/data/fiche_rempli">
+			<group ref="/data/fiche_rempli/produit_liste_3" appearance="field-list">
+				<label ref="jr:itext('produit_liste_3-label')" />
+				<trigger ref="/data/fiche_rempli/produit_liste_3/diu_quantite_necessaire_label_2">
+					<label ref="jr:itext('diu_quantite_necessaire_label_2-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_appartenant_au_PPS_apres_derniere_livraison_label_2">
+					<label ref="jr:itext('produit_appartenant_au_PPS_apres_derniere_livraison_label_2-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_apres_la_derniere_livraison_label_2">
+					<label ref="jr:itext('produit_apres_la_derniere_livraison_label_2-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_disponible_et_utilisable_a_la_livraison_label">
+					<label ref="jr:itext('produit_disponible_et_utilisable_a_la_livraison_label-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_appartenant_au_pps_restant_label_2">
+					<label ref="jr:itext('produit_appartenant_au_pps_restant_label_2-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_consommation_facturable_de_la_periode_label_2">
+					<label ref="jr:itext('produit_consommation_facturable_de_la_periode_label_2-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_prix_unitaire_label_2">
+					<label ref="jr:itext('produit_prix_unitaire_label_2-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_recourvrements_du_district_label_2">
+					<label ref="jr:itext('produit_recourvrements_du_district_label_2-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_recu_hors_entrepot_mobile_label">
+					<label ref="jr:itext('produit_recu_hors_entrepot_mobile_label-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_pertes_et_ajustements_label">
+					<label ref="jr:itext('produit_pertes_et_ajustements_label-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_consommation_reelle_du_pps_label_2">
+					<label ref="jr:itext('produit_consommation_reelle_du_pps_label_2-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_livraison_label">
+					<label ref="jr:itext('produit_livraison_label-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_numero_de_lot_label">
+					<label ref="jr:itext('produit_numero_de_lot_label-label')" />
+				</trigger>
+				<trigger ref="/data/fiche_rempli/produit_liste_3/produit_date_de_peremption_du_lot_label">
+					<label ref="jr:itext('produit_date_de_peremption_du_lot_label-label')" />
+				</trigger>
+			</group>
+		</group>
+	</h:body>
+</h:html>
