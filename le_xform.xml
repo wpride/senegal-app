@@ -6,7 +6,6 @@
 			<instance>
 				<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/7330597b92db84b1a33c7596bb7b1813502879be" uiVersion="1" version="1" name="Bon de commande-livraison Real">
 					<mois_de_visite />
-					<cmm_ou_stock_max />
 					<produit_group index="">
 						<produit_liste>
 							<produit_appartenant_au_PPS_apres_derniere_livraison_label />
@@ -41,6 +40,8 @@
 							<produit_date_de_peremption_du_lot_label />
 						</produit_liste_3>
 					</fiche_rempli>
+
+                    <!-- le hidden? -->
 					<produit-stock_appartenant_au_PPS_apres_la_derniere_livraison />
 					<produit-stock_appartenant_au_PPS_au_debout />
 					<produit-stock_appartenant_au_PPS_apres_la_derniere_livraison_1 />
@@ -78,9 +79,9 @@
 			<setvalue event="jr-insert" ref="/data/fiche_rempli/@index" value="int(/data/product_ix_2)"/>
 
 			<bind nodeset="/data/mois_de_visite" />
-			<bind nodeset="/data/cmm_ou_stock_max" />
 			<bind nodeset="/data/produit_group" />
 			<bind nodeset="/data/produit_group/produit_liste" />
+
 			<bind nodeset="/data/produit_group/produit_liste/produit_appartenant_au_PPS_apres_derniere_livraison_label" />
 			<bind nodeset="/data/produit_group/produit_liste/produit_apres_la_derniere_livraison_label" />
 			<bind nodeset="/data/produit_group/produit_liste/produit_disponible_et_utilisable_a_la_livraison" type="xsd:int" required="true()" />
@@ -120,7 +121,7 @@
 			<bind nodeset="/data/produit_consommation_brute_apres_la_derniere_livraison" />
 			<bind nodeset="/data/produit_consommation_brute_actuelle" calculate="coalesce(/data/produit_consommation_brute_apres_la_derniere_livraison, '0') + /data/produit_consommation_reelle_du_PPS" />
 			<bind nodeset="/data/produit_prix_unitaire" />
-			<bind nodeset="/data/produit_stock_ideal" calculate="if(/data/cmm_ou_stock_max = 'cmm', coalesce(if(int(3.5 * /data/produit_cmm) = 3.5 * /data/produit_cmm, int(3.5 * /data/produit_cmm), int(3.5 * /data/produit_cmm + 1)), '0'), /data/produit_stock_maximum_au_debout)" />
+			<bind nodeset="/data/produit_stock_ideal" calculate="coalesce(int(3.5 * /data/[consumption] + .999), '0')" />
 			<bind nodeset="/data/produit_cmm" calculate="/data/produit_consommation_brute_actuelle div /data/compt_de_visite" />
 			<bind nodeset="/data/produit_stock_maximum_au_debout" />
 			<bind nodeset="/data/produit_recouvrement_du_district" calculate="coalesce(/data/produit_consommation_facturable_de_la_periode * /data/produit_prix_unitaire, '0')" />
@@ -172,15 +173,6 @@
 					</text>
 					<text id="mois_de_visite-decembre-label">
 						<value>Decembre</value>
-					</text>
-					<text id="cmm_ou_stock_max-label">
-						<value>Est-ce que vous utiliserez la CMM ou le stock maximum pour calculer la livraison à cette visite ?</value>
-					</text>
-					<text id="cmm_ou_stock_max-stock_maximum-label">
-						<value>Stock Maximum</value>
-					</text>
-					<text id="cmm_ou_stock_max-cmm-label">
-						<value>CMM</value>
 					</text>
 					<text id="produit_liste-label">
 						<value>Produit</value> <!-- TODO add product name (and to #2, #3) -->
@@ -326,17 +318,6 @@
 			<item>
 				<label ref="jr:itext('mois_de_visite-decembre-label')" />
 				<value>decembre</value>
-			</item>
-		</select1>
-		<select1 ref="/data/cmm_ou_stock_max"> <!-- TODO eliminate this question -->
-			<label ref="jr:itext('cmm_ou_stock_max-label')" />
-			<item>
-				<label ref="jr:itext('cmm_ou_stock_max-stock_maximum-label')" />
-				<value>stock_maximum</value>
-			</item>
-			<item>
-				<label ref="jr:itext('cmm_ou_stock_max-cmm-label')" />
-				<value>cmm</value>
 			</item>
 		</select1>
         <repeat nodeset="/data/produit_group" jr:count="count(instance('products')/products/product)">
