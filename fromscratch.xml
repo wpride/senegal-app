@@ -52,14 +52,25 @@
               </transfer>
             </top_up>
             
+            <price_per_unit />
+            <amount_owed />
+            <review>
+              <disp_ideal_stock />
+              <disp_pps_stock_old />
+              <disp_total_stock_old />
+              <disp_total_stock_new />
+              <disp_pps_stock_new />
+              <disp_billable_consumption />
+              <disp_amount_owed />
+              <disp_outside_receipts />
+              <disp_losses />
+              <disp_actual_consumption />
+              <disp_dispensed />
+            </review>
+
           </products>
-          <products_review index="">
-            <screen3>
-            </screen3>
-          </products_review>
           
           <product_ix_1 />
-          <product_ix_2 />                  
         </data>
       </instance>
       <instance id="commcaresession" src="jr://instance/session" />
@@ -67,9 +78,7 @@
       <instance id="ledger" src="jr://instance/ledgerdb" />
 
       <bind nodeset="/data/product_ix_1" calculate="count(/data/products)"/>
-      <bind nodeset="/data/product_ix_2" calculate="count(/data/products_review)"/>
       <setvalue event="jr-insert" ref="/data/products/@index" value="int(/data/product_ix_1)"/>
-      <setvalue event="jr-insert" ref="/data/products_review/@index" value="int(/data/product_ix_2)"/>
 
       <setvalue event="jr-insert" ref="/data/products/balance/@entity-id" value="instance('commcaresession')/session/data/case_id" />
       <setvalue event="jr-insert" ref="/data/products/outside_receipts/transfer/@dest" value="instance('commcaresession')/session/data/case_id" />
@@ -94,6 +103,8 @@
 
       <bind nodeset="/data/products/top_up/transfer/entry/value/@quantity" calculate="if(/data/products/dispensed_ideal = 'y', /data/products/ideal_topup, /data/products/dispense_amt)" />
       <bind nodeset="/data/products/actual_consumption" calculate="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id] - /data/products/balance/entry/value[@section-id='stock']/@quantity + /data/products/outside_receipts_amt - /data/products/loss_amt" />
+
+      <bind nodeset="/data/products/amount_owed" calculate="/data/products/billed_consumption * /data/products/price_per_unit" />
 
     </model>
   </h:head>
@@ -138,9 +149,57 @@
 
     </repeat>
 
-    <repeat nodeset="/data/products_review" jr:count="count(instance('products')/products/product)">
+    <repeat nodeset="/data/products" jr:noAddRemove="true">
       <label><output value="[product name]"/></label> <!-- TODO: get correct syntax -->
-      <!-- TODO: just show summary stuff here -->
+
+      <trigger ref="/data/products/review/disp_ideal_stock">
+        <label>Ideal stock level: <output value="/data/products/ideal_stock" /></label>
+      </trigger>
+
+      <trigger ref="/data/products/review/disp_pps_stock_old">
+        <label>Stock belonging to PPS a/o last visit: <output value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" /></label>
+      </trigger>
+
+      <trigger ref="/data/products/review/disp_total_stock_old">
+        <label>Total stock a/o last visit: <output value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" /></label>
+      </trigger>
+
+      <trigger ref="/data/products/review/disp_total_stock_new">
+        <label>Current total stock: <output value="/data/products/balance/entry/value[@section-id='stock']/@quantity" /></label>
+      </trigger>
+
+      <trigger ref="/data/products/review/disp_pps_stock_new">
+        <label>Current stock belonging to PPS: <output value="/data/products/balance/entry/value[@section-id='stock-pps']/@quantity" /></label>
+      </trigger>
+
+      <trigger ref="/data/products/review/disp_billable_consumption">
+        <label>Billable consumption: <output value="/data/products/billed_consumption" /></label>
+      </trigger>
+
+      <input ref="/data/products/price_per_unit">
+        <label>Price per unit</label>
+      </input>
+
+      <trigger ref="/data/products/review/disp_amount_owed">
+        <label>Amount owed: <output value="/data/products/amount_owed" /></label>
+      </trigger>
+
+      <trigger ref="/data/products/review/disp_outside_receipts">
+        <label>Receipts from other sources: <output value="/data/products/outside_receipts_amt" /></label>
+      </trigger>
+
+      <trigger ref="/data/products/review/disp_losses">
+        <label>Losses/Adjustments: <output value="/data/products/loss_amt" /></label>
+      </trigger>
+
+      <trigger ref="/data/products/review/disp_actual_consumption">
+        <label>Actual consumption: <output value="/data/products/actual_consumption" /></label>
+      </trigger>
+
+      <trigger ref="/data/products/review/disp_dispensed">
+        <label>Amount delivered: <output value="if(/data/products/dispensed_ideal = 'y', /data/products/ideal_topup, /data/products/dispense_amt)" /></label>
+      </trigger>
+
     </repeat>
 
 
