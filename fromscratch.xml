@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns:orx="http://openrosa.org/jr/xforms" xmlns="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://openrosa.org/javarosa">
+	<h:head>
+		<h:title>senegal operateur form</h:title>
+		<model>
+			<instance>
+				<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/7330597b92db84b1a33c7596bb7b1813502879be" uiVersion="1" version="1" name="Bon de commande-livraison Real">
+
+                  <products index="">
+                    <old_stock_total />
+                    <old_stock_pps />
+
+                    <screen1>
+                      <disp_old_stock_total />
+                      <disp_old_stock_pps />
+                      
+
+                    </screen1>
+                    <screen2>
+                    </screen2>
+                  </products>
+                  <products_review index="">
+                    <screen3>
+                    </screen3>
+                  </products_review>
+                  
+                  <product_ix_1 />
+                  <product_ix_2 />                  
+				</data>
+			</instance>
+            <instance id="commcaresession" src="jr://instance/session" />
+            <instance id="products" src="jr://fixture/commtrack:products" />
+            <instance id="ledger" src="jr://instance/ledgerdb" />
+
+            <bind nodeset="/data/product_ix_1" calculate="count(/data/products)"/>
+			<bind nodeset="/data/product_ix_2" calculate="count(/data/products_review)"/>
+            <setvalue event="jr-insert" ref="/data/products/@index" value="int(/data/product_ix_1)"/>
+			<setvalue event="jr-insert" ref="/data/products_review/@index" value="int(/data/product_ix_2)"/>
+
+            <setvalue event="jr-insert" ref="/data/products/old_stock_total" value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
+            <setvalue event="jr-insert" ref="/data/products/old_stock_pps" value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
+
+		</model>
+	</h:head>
+	<h:body>
+
+<!-- visit is for which month? -->
+<repeat nodeset="/data/products" jr:count="count(instance('products')/products/product)">
+  <group ref="/data/products/screen1" appearance="field-list">
+    <label><output value="[product name]"/></label>
+
+    <trigger ref="/data/products/screen1/disp_old_stock_total">
+      <label>Total SOH after last visit: <output value="/data/products/old_stock_total" /></label>
+    </trigger>
+    <trigger ref="/data/products/screen1/disp_old_stock_total">
+      <label>Of which portion is the PPS's side stash: <output value="/data/products/old_stock_pps" /></label>
+    </trigger>
+
+    <input ref="">
+      <label>Current total stock</label>
+    </input>
+    <input ref="">
+      <label>Receipts from outside sources</label>
+    </input>
+    <input ref="">
+      <label>Losses/adjustments</label>
+    </input>
+
+  </group>
+  <group ref="/data/products/screen2" appearance="field-list">
+    <label><output value="[product name]"/></label>
+
+    display: ideal stock (3.5*amc)
+    did you deliver this much?
+    if no, how much delivered?
+
+    <!-- lot number/expiration date(s) -->
+
+  </group>
+</repeat>
+
+<repeat nodeset="/data/products_review" jr:count="count(instance('products')/products/product)">
+  <group ref="/data/products/screen3" appearance="field-list">
+    <label><output value="[product name]"/></label>
+  </group>
+</repeat>
+
+
+	</h:body>
+</h:html>
