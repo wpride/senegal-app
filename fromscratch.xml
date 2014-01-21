@@ -115,6 +115,7 @@
     <group>
     <label><output value="instance('products')/products/product[index()=../@index]/name"/></label>
     <repeat nodeset="/data/products" jr:count="count(instance('products')/products/product)">
+      <jr:entryHeader><output value="$name"/></jr:entryHeader>
 
       <trigger ref="/data/products/disp_old_stock_total">
         <label>Total SOH after last visit: <output value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" /></label>
@@ -155,6 +156,7 @@
     <group>
     <label><output value="instance('products')/products/product[index()=../@index]/name"/> (review)</label>
     <repeat nodeset="/data/products" jr:noAddRemove="true">
+      <jr:entryHeader><output value="$name"/></jr:entryHeader>
 
       <trigger ref="/data/products/review/disp_ideal_stock">
         <label>Ideal stock level: <output value="/data/products/ideal_stock" /></label>
