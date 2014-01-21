@@ -7,18 +7,20 @@
         <data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/7330597b92db84b1a33c7596bb7b1813502879be" uiVersion="1" version="1" name="Bon de commande-livraison Real">
 
           <products index="">
-            <screen1>
-              <disp_old_stock_total />
-              <disp_old_stock_pps />
+            <disp_old_stock_total />
+            <disp_old_stock_pps />
 
-              <outside_receipts_amt />
-              <loss_amt />
+            <outside_receipts_amt />
+            <loss_amt />
               
-              <pps_stock /> <!-- interim value that can go negative -->
-              <billed_consumption />
-            </screen1>
-            <screen2>
-            </screen2>
+            <pps_stock /> <!-- interim value that can go negative -->
+            <billed_consumption />
+
+            <ideal_stock />
+            <ideal_topup />
+            <dispensed_ideal />
+            <dispense_amt />
+            <actual_consumption />
 
             <outside_receipts>
               <transfer xmlns="http://commtrack.org/section_report" dest="" type="other" date="">
@@ -79,12 +81,19 @@
       <setvalue event="jr-insert" ref="/data/products/top_up/transfer/entry/@id" value="instance('products')/products/product[index()=../@index]/@id" />
       
       <!-- note: these binds duplicate the transfer for both the 'stock' and 'stock-pps' sections -->
-      <bind nodeset="/data/products/outside_receipts/transfer/entry/value/@quantity" calculate="/data/products/screen1/outside_receipts_amt" />
-      <bind nodeset="/data/products/losses/transfer/entry/value/@quantity" calculate="/data/products/screen1/losses_amt" />
+      <bind nodeset="/data/products/outside_receipts/transfer/entry/value/@quantity" calculate="/data/products/outside_receipts_amt" />
+      <bind nodeset="/data/products/losses/transfer/entry/value/@quantity" calculate="/data/products/losses_amt" />
       
-      <bind nodeset="/data/products/screen1/pps_stock" calculate="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id] + /data/products/balance/entry/value[@section-id='stock']/@quantity - instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
-      <bind nodeset="/data/products/screen1/billed_consumption" calculate="max(-../pps_stock, 0)" />
-      <bind nodeset="/data/products/balance/entry/value[@section-id='stock-pps']/@quantity" calculate="max(/data/products/screen1/pps_stock, 0)" />
+      <bind nodeset="/data/products/pps_stock" calculate="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id] + /data/products/balance/entry/value[@section-id='stock']/@quantity - instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
+      <bind nodeset="/data/products/billed_consumption" calculate="max(-../pps_stock, 0)" />
+      <bind nodeset="/data/products/balance/entry/value[@section-id='stock-pps']/@quantity" calculate="max(/data/products/pps_stock, 0)" />
+
+      <bind nodeset="/data/products/ideal_stock" calculate="3.5 * instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='consumption']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
+      <bind nodeset="/data/products/ideal_topup" calculate="max(/data/products/ideal_stock - /data/products/balance/entry/value[@section-id='stock']/@quantity, 0)" />
+      <bind nodeset="/data/products/dispense_amt" relevant="../dispensed_ideal = 'n'" />
+
+      <bind nodeset="/data/products/top_up/transfer/entry/value/@quantity" calculate="if(/data/products/dispensed_ideal = 'y', /data/products/ideal_topup, /data/products/dispense_amt)" />
+      <bind nodeset="/data/products/actual_consumption" calculate="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id] - /data/products/balance/entry/value[@section-id='stock']/@quantity + /data/products/outside_receipts_amt - /data/products/loss_amt" />
 
     </model>
   </h:head>
@@ -92,46 +101,46 @@
 
     <!-- add q: visit is for which month? -->
     <repeat nodeset="/data/products" jr:count="count(instance('products')/products/product)">
-      <group ref="/data/products/screen1" appearance="field-list">
-        <label><output value="[product name]"/></label>
+      <label><output value="[product name]"/></label> <!-- TODO: get correct syntax -->
 
-        <trigger ref="/data/products/screen1/disp_old_stock_total">
-          <label>Total SOH after last visit: <output value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" /></label>
-        </trigger>
-        <trigger ref="/data/products/screen1/disp_old_stock_total">
-          <label>Of which portion is the PPS's own stash: <output value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" /></label>
-        </trigger>
+      <trigger ref="/data/products/disp_old_stock_total">
+        <label>Total SOH after last visit: <output value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" /></label>
+      </trigger>
+      <trigger ref="/data/products/disp_old_stock_total">
+        <label>Of which portion is the PPS's own stash: <output value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" /></label>
+      </trigger>
+      
+      <input ref="/data/products/balance/entry/value[@section-id='stock']/@quantity">
+        <label>Current total stock</label>
+      </input>
+      <input ref="/data/products/outside_receipts_amt">
+        <label>Receipts from outside sources</label>
+      </input>
+      <input ref="/data/products/loss_amt">
+        <label>Losses/adjustments</label>
+      </input>
+      
+      <trigger ref="/data/products/disp_ideal_stock">
+        <label>Ideal stock is: <output value="/data/products/ideal_stock" /> (dispense <output value="/data/products/ideal_topup" />)</label>
+      </trigger>
 
-        <input ref="/data/products/balance/entry/value[@section-id='stock']/@quantity">
-          <label>Current total stock</label>
-        </input>
-        <input ref="/data/products/screen1/outside_receipts_amt">
-          <label>Receipts from outside sources</label>
-        </input>
-        <input ref="/data/products/screen1/loss_amt">
-          <label>Losses/adjustments</label>
-        </input>
+      <select1 ref="/data/products/dispensed_ideal">
+        <label>Did you dispense this much?</label>
+        <item><label>Yes</label><value>y</value></item>
+        <item><label>No</label><value>n</value></item>
+      </select1>
 
-      </group>
-      <group ref="/data/products/screen2" appearance="field-list">
-        <label><output value="[product name]"/></label>
+      <input ref="/data/products/dispense_amt">
+        <label>How much did you dispense?</label>
+      </input>
 
-        <!-- TODO
-             display: ideal stock (3.5*amc)
-             did you deliver this much?
-             if no, how much delivered?
-        -->
+      <!-- add q: lot number/expiration date(s) -->
 
-        <!-- add q: lot number/expiration date(s) -->
-
-      </group>
     </repeat>
 
     <repeat nodeset="/data/products_review" jr:count="count(instance('products')/products/product)">
-      <group ref="/data/products/screen3" appearance="field-list">
-        <label><output value="[product name]"/></label>
-        <!-- TODO: just show summary stuff here -->
-      </group>
+      <label><output value="[product name]"/></label> <!-- TODO: get correct syntax -->
+      <!-- TODO: just show summary stuff here -->
     </repeat>
 
 
