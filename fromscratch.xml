@@ -97,7 +97,7 @@
       <bind nodeset="/data/products/billed_consumption" calculate="max(-../pps_stock, 0)" />
       <bind nodeset="/data/products/balance/entry/value[@section-id='stock-pps']/@quantity" calculate="max(/data/products/pps_stock, 0)" />
 
-      <bind nodeset="/data/products/ideal_stock" calculate="3.5 * instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='consumption']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
+      <bind nodeset="/data/products/ideal_stock" calculate="int(3.5 * instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='consumption']/entry[@id=instance('products')/products/product[index()=../@index]/@id] + .999)" />
       <bind nodeset="/data/products/ideal_topup" calculate="max(/data/products/ideal_stock - /data/products/balance/entry/value[@section-id='stock']/@quantity, 0)" />
       <bind nodeset="/data/products/dispense_amt" relevant="../dispensed_ideal = 'n'" />
 
