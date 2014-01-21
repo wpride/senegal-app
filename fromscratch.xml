@@ -7,14 +7,38 @@
 				<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/7330597b92db84b1a33c7596bb7b1813502879be" uiVersion="1" version="1" name="Bon de commande-livraison Real">
 
                   <products index="">
-                    <old_stock_total />
-                    <old_stock_pps />
-
                     <screen1>
                       <disp_old_stock_total />
                       <disp_old_stock_pps />
-                      
 
+                      <outside_receipts_amt />
+                      <loss_amt />
+                      
+                      <pps_stock />
+                      <billed_consumption />
+
+                      <outside_receipts>
+                        <transfer xmlns="http://commtrack.org/section_report" dest="" type="other" date="">
+                          <entry id="">
+                            <value section-id="stock" quantity=""/>
+                            <value section-id="stock-pps" quantity=""/>
+                          </entry >
+                        </transfer>
+                      </outside_receipts>
+                      <losses>
+                        <transfer xmlns="http://commtrack.org/section_report" src="" type="loss" date="">
+                          <entry id="">
+                            <value section-id="stock" quantity=""/>
+                            <value section-id="stock-pps" quantity=""/>
+                          </entry >
+                        </transfer>
+                      </losses>
+                      <balance xmlns="http://commtrack.org/stock_report" entity-id="" date="">
+                        <entry id="">
+                          <value section-id="stock" quantity="" />
+                          <value section-id="stock-pps" quantity="" />
+                        </entry>
+                      </balance>
                     </screen1>
                     <screen2>
                     </screen2>
@@ -37,32 +61,44 @@
             <setvalue event="jr-insert" ref="/data/products/@index" value="int(/data/product_ix_1)"/>
 			<setvalue event="jr-insert" ref="/data/products_review/@index" value="int(/data/product_ix_2)"/>
 
-            <setvalue event="jr-insert" ref="/data/products/old_stock_total" value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
-            <setvalue event="jr-insert" ref="/data/products/old_stock_pps" value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
+            <setvalue event="jr-insert" ref="/data/products/screen1/balance/@entity-id" value="instance('commcaresession')/session/data/case_id" />
+			<setvalue event="jr-insert" ref="/data/products/screen1/outside_receipts/transfer/@dest" value="instance('commcaresession')/session/data/case_id" />
+			<setvalue event="jr-insert" ref="/data/products/screen1/losses/transfer/@src" value="instance('commcaresession')/session/data/case_id" />
+            <setvalue event="jr-insert" ref="/data/products/screen1/balance/entry/@id" value="instance('products')/products/product[index()=../@index]/@id" />
+			<setvalue event="jr-insert" ref="/data/products/screen1/outside_receipts/transfer/entry/@id" value="instance('products')/products/product[index()=../@index]/@id" />
+			<setvalue event="jr-insert" ref="/data/products/screen1/losses/transfer/entry/@id" value="instance('products')/products/product[index()=../@index]/@id" />
+		
+            <!-- note: these binds duplicate the transfer for both the 'stock' and 'stock-pps' sections -->
+            <bind nodeset="/data/products/screen1/outside_receipts/transfer/entry/value/@quantity" calculate="/data/products/screen1/outside_receipts_amt" />
+            <bind nodeset="/data/products/screen1/losses/transfer/entry/value/@quantity" calculate="/data/products/screen1/losses_amt" />
+            
+            <bind nodeset="/data/products/screen1/pps_stock" calculate="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id] + /data/products/screen1/balance/entry/value[@section-id='stock']/@quantity - instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
+            <bind nodeset="/data/products/screen1/billed_consumption" calculate="max(-../pps_stock, 0)" />
+            <bind nodeset="/data/products/screen1/balance/entry/value[@section-id='stock-pps']/@quantity" calculate="max(/data/products/screen1/pps_stock, 0)" />
 
 		</model>
 	</h:head>
 	<h:body>
 
-<!-- visit is for which month? -->
+<!-- add q: visit is for which month? -->
 <repeat nodeset="/data/products" jr:count="count(instance('products')/products/product)">
   <group ref="/data/products/screen1" appearance="field-list">
     <label><output value="[product name]"/></label>
 
     <trigger ref="/data/products/screen1/disp_old_stock_total">
-      <label>Total SOH after last visit: <output value="/data/products/old_stock_total" /></label>
+      <label>Total SOH after last visit: <output value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" /></label>
     </trigger>
     <trigger ref="/data/products/screen1/disp_old_stock_total">
-      <label>Of which portion is the PPS's side stash: <output value="/data/products/old_stock_pps" /></label>
+      <label>Of which portion is the PPS's own stash: <output value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" /></label>
     </trigger>
 
-    <input ref="">
+    <input ref="/data/products/screen1/balance/entry/value[@section-id='stock']/@quantity">
       <label>Current total stock</label>
     </input>
-    <input ref="">
+    <input ref="/data/products/screen1/outside_receipts_amt">
       <label>Receipts from outside sources</label>
     </input>
-    <input ref="">
+    <input ref="/data/products/screen1/loss_amt">
       <label>Losses/adjustments</label>
     </input>
 
@@ -70,11 +106,13 @@
   <group ref="/data/products/screen2" appearance="field-list">
     <label><output value="[product name]"/></label>
 
+    <!-- TODO
     display: ideal stock (3.5*amc)
     did you deliver this much?
     if no, how much delivered?
+    -->
 
-    <!-- lot number/expiration date(s) -->
+    <!-- add q: lot number/expiration date(s) -->
 
   </group>
 </repeat>
@@ -82,6 +120,7 @@
 <repeat nodeset="/data/products_review" jr:count="count(instance('products')/products/product)">
   <group ref="/data/products/screen3" appearance="field-list">
     <label><output value="[product name]"/></label>
+    <!-- TODO: just show summary stuff here -->
   </group>
 </repeat>
 
