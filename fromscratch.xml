@@ -6,13 +6,16 @@
       <instance>
         <data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/7330597b92db84b1a33c7596bb7b1813502879be" uiVersion="1" version="1" name="Bon de commande-livraison Real">
 
+          <num_products />
           <products index="">
             <disp_old_stock_total />
             <disp_old_stock_pps />
+            <disp_ideal_stock />
 
             <outside_receipts_amt />
             <loss_amt />
-              
+
+            <total_stock /> <!-- interim value to avoid (errant) circular ref error -->
             <pps_stock /> <!-- interim value that can go negative -->
             <billed_consumption />
 
@@ -77,6 +80,7 @@
       <instance id="products" src="jr://fixture/commtrack:products" />
       <instance id="ledger" src="jr://instance/ledgerdb" />
 
+      <bind nodeset="/data/num_products" calculate="count(instance('products')/products/product)" />
       <bind nodeset="/data/product_ix_1" calculate="count(/data/products)"/>
       <setvalue event="jr-insert" ref="/data/products/@index" value="int(/data/product_ix_1)"/>
 
@@ -93,8 +97,9 @@
       <bind nodeset="/data/products/outside_receipts/transfer/entry/value/@quantity" calculate="/data/products/outside_receipts_amt" />
       <bind nodeset="/data/products/losses/transfer/entry/value/@quantity" calculate="/data/products/losses_amt" />
       
-      <bind nodeset="/data/products/pps_stock" calculate="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id] + /data/products/balance/entry/value[@section-id='stock']/@quantity - instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
+      <bind nodeset="/data/products/pps_stock" calculate="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id] + /data/products/total_stock - instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" />
       <bind nodeset="/data/products/billed_consumption" calculate="max(-../pps_stock, 0)" />
+      <bind nodeset="/data/products/balance/entry/value[@section-id='stock']/@quantity" calculate="/data/products/total_stock" />
       <bind nodeset="/data/products/balance/entry/value[@section-id='stock-pps']/@quantity" calculate="max(/data/products/pps_stock, 0)" />
 
       <bind nodeset="/data/products/ideal_stock" calculate="int(3.5 * instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='consumption']/entry[@id=instance('products')/products/product[index()=../@index]/@id] + .999)" />
@@ -114,7 +119,7 @@
 
     <group>
     <label><output value="instance('products')/products/product[index()=../@index]/name"/></label>
-    <repeat nodeset="/data/products" jr:count="count(instance('products')/products/product)">
+    <repeat nodeset="/data/products" jr:count="/data/num_products">
       <jr:entryHeader><output value="$name"/></jr:entryHeader>
 
       <trigger ref="/data/products/disp_old_stock_total">
@@ -124,7 +129,7 @@
         <label>Of which portion is the PPS's own stash: <output value="instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[index()=../@index]/@id]" /></label>
       </trigger>
       
-      <input ref="/data/products/balance/entry/value[@section-id='stock']/@quantity">
+      <input ref="/data/products/total_stock">
         <label>Current total stock</label>
       </input>
       <input ref="/data/products/outside_receipts_amt">
